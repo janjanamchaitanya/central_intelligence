@@ -24,18 +24,24 @@ const Login = () => {
     setLoading(true);
 
     try {
+      // Generate a unique device ID based on browser fingerprint
+      const deviceId = btoa(`${navigator.userAgent}-${navigator.language}-${window.screen.width}x${window.screen.height}`).substring(0, 50);
+
       const deviceInfo = {
         device_type: 'desktop',
+        device_id: deviceId,
         browser: navigator.userAgent.split('/').pop().split(' ')[0] || 'Chrome',
         browser_version: navigator.userAgent.match(/Chrome\/(\d+)/)?.[1] || '120',
-        os_name: navigator.platform.includes('Mac') ? 'macOS' : navigator.platform.includes('Win') ? 'Windows' : 'Linux',
         os_version: navigator.userAgent.match(/\(([^)]+)\)/)?.[1] || 'Unknown',
-        screen_width: window.screen.width,
-        screen_height: window.screen.height,
         user_agent: navigator.userAgent,
+        screen_resolution: {
+          width: window.screen.width,
+          height: window.screen.height,
+        },
       };
 
       const result = await login({
+        auth_strategy: 'password_otp',
         username,
         password,
         device_info: deviceInfo,

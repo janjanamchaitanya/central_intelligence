@@ -1,26 +1,6 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:16-alpine
-    container_name: identity-provider-db
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: identity_provider
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - identity-network
-
   # Redis
   redis:
     image: redis:7-alpine
@@ -67,48 +47,20 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      test:
+        [
+          "CMD",
+          "kafka-broker-api-versions",
+          "--bootstrap-server",
+          "localhost:9092",
+        ]
       interval: 10s
       timeout: 10s
       retries: 5
     networks:
       - identity-network
 
-  # Application (optional - for development)
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: identity-provider-app
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-    ports:
-      - "3000:3000"
-    environment:
-      NODE_ENV: development
-      PORT: 3000
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
-      DB_DATABASE: identity_provider
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      KAFKA_BROKERS: kafka:29092
-    volumes:
-      - ./src:/app/src
-      - ./logs:/app/logs
-    networks:
-      - identity-network
-    restart: unless-stopped
-
 volumes:
-  postgres_data:
   redis_data:
 
 networks:
