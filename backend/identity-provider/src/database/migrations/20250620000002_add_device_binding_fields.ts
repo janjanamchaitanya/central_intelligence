@@ -2,6 +2,7 @@ import { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
   // Add device binding fields to user_devices table
+  // Note: browser_version, os_version, app_version, user_agent already exist
   await knex.schema.alterTable('user_devices', (table) => {
     // Device fingerprinting
     table.string('fingerprint', 255).nullable();
@@ -19,9 +20,7 @@ export async function up(knex: Knex): Promise<void> {
     table.decimal('latitude', 10, 7).nullable();
     table.decimal('longitude', 10, 7).nullable();
 
-    // Browser/Device info
-    table.string('browser', 100).nullable();
-    table.string('browser_version', 50).nullable();
+    // Browser/Device info (browser is alias for browser_name which exists)
     table.integer('screen_width').nullable();
     table.integer('screen_height').nullable();
     table.string('os_type', 50).nullable();
@@ -44,8 +43,6 @@ export async function down(knex: Knex): Promise<void> {
     table.dropColumn('last_login_at');
     table.dropColumn('latitude');
     table.dropColumn('longitude');
-    table.dropColumn('browser');
-    table.dropColumn('browser_version');
     table.dropColumn('screen_width');
     table.dropColumn('screen_height');
     table.dropColumn('os_type');
