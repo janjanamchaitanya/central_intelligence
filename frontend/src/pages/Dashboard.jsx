@@ -1,218 +1,349 @@
 import { useState } from 'react';
-import { Alert, Badge, Button, Card, Input, TransactionItem } from '../components';
+import { useAuth } from '../context/AuthContext';
+import {
+  HomeIcon,
+  CreditCardIcon,
+  BanknotesIcon,
+  ChartBarIcon,
+  Cog6ToothIcon,
+  GiftIcon,
+  BuildingLibraryIcon,
+  MagnifyingGlassIcon,
+  BellIcon,
+  ChatBubbleLeftIcon,
+  UserCircleIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  QrCodeIcon,
+  PhoneIcon,
+  DocumentTextIcon,
+  EllipsisHorizontalIcon,
+  SparklesIcon,
+  ArrowTrendingUpIcon,
+} from '@heroicons/react/24/outline';
 
-/**
- * Dashboard Page - Payment Brain Design System Demo
- * Showcases all components with proper design system implementation
- */
 const Dashboard = () => {
-  const [amount, setAmount] = useState('');
-  const [showAlert, setShowAlert] = useState(true);
+  const { user, logout } = useAuth();
+  const [showBalance, setShowBalance] = useState(true);
 
+  // Sample data
+  const balance = 658230.45;
+  const balanceChange = 12.6;
+  const spendingAmount = 145890;
   const transactions = [
-    {
-      id: 1,
-      merchantName: 'Amazon India',
-      category: 'E-commerce',
-      rail: 'UPI',
-      time: '2 hours ago',
-      amount: 2500,
-      type: 'debit',
-      status: 'success',
-      icon: '🛒',
-    },
-    {
-      id: 2,
-      merchantName: 'Salary Credit',
-      category: 'Income',
-      rail: 'NEFT',
-      time: '1 day ago',
-      amount: 85000,
-      type: 'credit',
-      status: 'success',
-      icon: '💼',
-    },
-    {
-      id: 3,
-      merchantName: 'Netflix Subscription',
-      category: 'Entertainment',
-      rail: 'Card',
-      time: '3 days ago',
-      amount: 649,
-      type: 'debit',
-      status: 'success',
-      icon: '🎬',
-    },
-    {
-      id: 4,
-      merchantName: 'Swiggy Food Order',
-      category: 'Food & Dining',
-      rail: 'UPI',
-      time: '5 days ago',
-      amount: 450,
-      type: 'debit',
-      status: 'pending',
-      icon: '🍔',
-    },
+    { id: 1, name: 'Amazon', amount: -2499, date: '2 hours ago', category: 'Shopping', icon: '🛒' },
+    { id: 2, name: 'Starbucks', amount: -450, date: '5 hours ago', category: 'Food', icon: '☕' },
+    { id: 3, name: 'Zomato', amount: -890, date: 'Yesterday', category: 'Food', icon: '🍔' },
+    { id: 4, name: 'Salary', amount: 85000, date: '2 days ago', category: 'Income', icon: '💰' },
+  ];
+
+  const quickActions = [
+    { name: 'Scan & Pay', icon: QrCodeIcon, color: 'bg-blue-500' },
+    { name: 'Pay Phone Number', icon: PhoneIcon, color: 'bg-purple-500' },
+    { name: 'Pay Bills', icon: DocumentTextIcon, color: 'bg-green-500' },
+    { name: 'More', icon: EllipsisHorizontalIcon, color: 'bg-orange-500' },
+  ];
+
+  const navItems = [
+    { name: 'Home', icon: HomeIcon, active: true },
+    { name: 'Accounts', icon: BuildingLibraryIcon },
+    { name: 'Payments', icon: BanknotesIcon },
+    { name: 'Investments', icon: ChartBarIcon },
+    { name: 'Analytics', icon: ChartBarIcon },
+    { name: 'Cards', icon: CreditCardIcon },
+    { name: 'Rewards', icon: GiftIcon },
+    { name: 'Settings', icon: Cog6ToothIcon },
   ];
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      {/* Header */}
-      <header className="bg-white shadow-level-1">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div className="min-h-screen bg-[#0a1628] flex">
+      {/* Sidebar */}
+      <div className="w-64 bg-[#0d1b2e] border-r border-gray-800 flex flex-col">
+        {/* Logo */}
+        <div className="p-6 border-b border-gray-800">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xl">N</span>
+            </div>
+            <span className="text-white text-xl font-bold">NOVA</span>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 p-4 space-y-2">
+          {navItems.map((item) => (
+            <button
+              key={item.name}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                item.active
+                  ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <item.icon className="w-5 h-5" />
+              <span className="text-sm font-medium">{item.name}</span>
+            </button>
+          ))}
+        </nav>
+
+        {/* Premium Upgrade */}
+        <div className="p-4 m-4 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl">
+          <div className="flex items-start gap-3 mb-3">
+            <SparklesIcon className="w-6 h-6 text-yellow-300" />
+            <div>
+              <h3 className="text-white font-semibold text-sm">Upgrade to Premium</h3>
+              <p className="text-white/70 text-xs mt-1">Get exclusive benefits</p>
+            </div>
+          </div>
+          <button className="w-full bg-white text-purple-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors">
+            Upgrade Now
+          </button>
+        </div>
+
+        {/* User Info */}
+        <div className="p-4 border-t border-gray-800">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold">
+                {user?.username?.[0]?.toUpperCase() || 'U'}
+              </span>
+            </div>
+            <div className="flex-1">
+              <p className="text-white text-sm font-medium">{user?.username || 'User'}</p>
+              <p className="text-gray-400 text-xs">{user?.email || 'user@example.com'}</p>
+            </div>
+            <button
+              onClick={logout}
+              className="text-gray-400 hover:text-white transition-colors"
+              title="Logout"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        {/* Header */}
+        <header className="bg-[#0d1b2e] border-b border-gray-800 px-8 py-4 sticky top-0 z-10">
           <div className="flex items-center justify-between">
-            <h1 className="text-display-lg text-primary-600 font-medium">
-              Payment Brain
-            </h1>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Good Morning, {user?.username || 'User'}! 👋</h1>
+              <p className="text-gray-400 text-sm mt-1">Welcome back to your financial dashboard</p>
+            </div>
             <div className="flex items-center gap-4">
-              <Badge variant="success">Verified</Badge>
-              <Button variant="ghost" size="sm">
-                Profile
-              </Button>
+              {/* Search */}
+              <div className="relative">
+                <MagnifyingGlassIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500 w-64"
+                />
+              </div>
+
+              {/* Notifications */}
+              <button className="relative p-2 hover:bg-gray-800 rounded-lg transition-colors">
+                <BellIcon className="w-6 h-6 text-gray-400" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+              </button>
+
+              {/* Messages */}
+              <button className="relative p-2 hover:bg-gray-800 rounded-lg transition-colors">
+                <ChatBubbleLeftIcon className="w-6 h-6 text-gray-400" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-blue-500 rounded-full"></span>
+              </button>
+
+              {/* Profile */}
+              <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
+                <UserCircleIcon className="w-6 h-6 text-gray-400" />
+              </button>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Balance Hero Card */}
-        <Card className="mb-8 bg-gradient-to-br from-primary-600 to-primary-800 text-white" elevated>
-          <div className="space-y-2">
-            <p className="text-body-lg opacity-90">Available Balance</p>
-            <p className="text-display-xl font-medium tabular-nums">₹4,85,200.00</p>
-            <div className="flex gap-3 mt-6">
-              <Button variant="secondary" size="sm">
-                Send Money
-              </Button>
-              <Button variant="ghost" size="sm" className="text-white border-white/20 hover:bg-white/10">
-                Request
-              </Button>
-            </div>
-          </div>
-        </Card>
-
-        {/* Alerts Section */}
-        {showAlert && (
-          <div className="mb-8 space-y-4">
-            <Alert
-              severity="warning"
-              title="Unusual Activity Detected"
-              message="We noticed a payment of ₹45,000 to a new merchant. This is higher than your usual spending pattern."
-              dismissible
-              onDismiss={() => setShowAlert(false)}
-              action={
-                <div className="flex gap-3 mt-2">
-                  <Button variant="primary" size="sm">
-                    Review Transaction
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    Dismiss
-                  </Button>
+        {/* Dashboard Content */}
+        <main className="p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Column - Main Cards */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Total Balance Card */}
+              <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 rounded-2xl p-6 text-white shadow-xl">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm font-medium opacity-90">Total Balance</span>
+                  <button
+                    onClick={() => setShowBalance(!showBalance)}
+                    className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                  >
+                    {showBalance ? (
+                      <EyeSlashIcon className="w-5 h-5" />
+                    ) : (
+                      <EyeIcon className="w-5 h-5" />
+                    )}
+                  </button>
                 </div>
-              }
-            />
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Quick Payment */}
-            <Card>
-              <h2 className="text-h2 text-neutral-900 mb-6">Quick Payment</h2>
-              <div className="space-y-4">
-                <Input
-                  label="Enter UPI ID"
-                  name="upi"
-                  placeholder="name@upi"
-                  required
-                />
-                <Input
-                  label="Amount"
-                  name="amount"
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="0.00"
-                  isAmount
-                  required
-                />
+                <div className="mb-4">
+                  <h2 className="text-4xl font-bold mb-2">
+                    {showBalance ? `₹${balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '₹••••••'}
+                  </h2>
+                  <div className="flex items-center gap-2">
+                    <ArrowTrendingUpIcon className="w-4 h-4 text-green-300" />
+                    <span className="text-sm text-green-300">+{balanceChange}% from last month</span>
+                  </div>
+                </div>
                 <div className="flex gap-3">
-                  <Button variant="primary" className="flex-1">
-                    Pay Now
-                  </Button>
-                  <Button variant="secondary">
-                    Cancel
-                  </Button>
+                  <button className="flex-1 bg-white text-blue-600 px-4 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors">
+                    Send Money
+                  </button>
+                  <button className="flex-1 bg-white/10 backdrop-blur-sm px-4 py-3 rounded-xl font-semibold hover:bg-white/20 transition-colors border border-white/20">
+                    Add Money
+                  </button>
                 </div>
               </div>
-            </Card>
 
-            {/* Recent Transactions */}
-            <Card>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-h2 text-neutral-900">Recent Transactions</h2>
-                <Button variant="ghost" size="sm">
-                  View All →
-                </Button>
-              </div>
-              <div className="divide-y divide-neutral-200 -mx-6">
-                {transactions.map((txn) => (
-                  <TransactionItem
-                    key={txn.id}
-                    {...txn}
-                    onClick={() => console.log('Transaction clicked:', txn.id)}
-                  />
-                ))}
-              </div>
-            </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Intelligence Score */}
-            <Card>
-              <div className="text-center">
-                <p className="text-label uppercase text-neutral-500 mb-2">
-                  Intelligence Score
-                </p>
-                <div className="w-24 h-24 mx-auto rounded-full bg-success-bg flex items-center justify-center mb-3">
-                  <p className="text-display-lg text-success font-medium">95</p>
+              {/* Quick Actions */}
+              <div className="bg-[#0d1b2e] rounded-2xl p-6 border border-gray-800">
+                <h3 className="text-white font-semibold mb-4">Quick Actions</h3>
+                <div className="grid grid-cols-4 gap-4">
+                  {quickActions.map((action) => (
+                    <button
+                      key={action.name}
+                      className="flex flex-col items-center gap-3 p-4 bg-gray-800/50 hover:bg-gray-800 rounded-xl transition-all border border-gray-700 hover:border-gray-600"
+                    >
+                      <div className={`w-12 h-12 ${action.color} rounded-xl flex items-center justify-center`}>
+                        <action.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <span className="text-xs text-gray-300 text-center">{action.name}</span>
+                    </button>
+                  ))}
                 </div>
-                <p className="text-caption text-neutral-600">
-                  Excellent security profile
+              </div>
+
+              {/* Recent Transactions */}
+              <div className="bg-[#0d1b2e] rounded-2xl p-6 border border-gray-800">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-white font-semibold">Recent Transactions</h3>
+                  <button className="text-blue-400 text-sm hover:text-blue-300">View All</button>
+                </div>
+                <div className="space-y-3">
+                  {transactions.map((transaction) => (
+                    <div
+                      key={transaction.id}
+                      className="flex items-center gap-4 p-4 bg-gray-800/30 hover:bg-gray-800/50 rounded-xl transition-colors border border-gray-700/50"
+                    >
+                      <div className="w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center text-2xl">
+                        {transaction.icon}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white font-medium">{transaction.name}</p>
+                        <p className="text-gray-400 text-sm">{transaction.date}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className={`font-semibold ${transaction.amount > 0 ? 'text-green-400' : 'text-white'}`}>
+                          {transaction.amount > 0 ? '+' : ''}₹{Math.abs(transaction.amount).toLocaleString('en-IN')}
+                        </p>
+                        <p className="text-gray-400 text-sm">{transaction.category}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Insights */}
+            <div className="space-y-6">
+              {/* Spending Overview */}
+              <div className="bg-[#0d1b2e] rounded-2xl p-6 border border-gray-800">
+                <h3 className="text-white font-semibold mb-4">Spending Overview</h3>
+                <div className="mb-6">
+                  <p className="text-gray-400 text-sm mb-2">This Month</p>
+                  <p className="text-3xl font-bold text-white">₹{spendingAmount.toLocaleString('en-IN')}</p>
+                </div>
+
+                {/* Simple Bar Chart */}
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-gray-400">Food & Dining</span>
+                      <span className="text-white">₹45,890</span>
+                    </div>
+                    <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-blue-500 rounded-full" style={{ width: '62%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-gray-400">Shopping</span>
+                      <span className="text-white">₹38,200</span>
+                    </div>
+                    <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-purple-500 rounded-full" style={{ width: '51%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-gray-400">Transport</span>
+                      <span className="text-white">₹28,400</span>
+                    </div>
+                    <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-green-500 rounded-full" style={{ width: '38%' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-gray-400">Entertainment</span>
+                      <span className="text-white">₹33,400</span>
+                    </div>
+                    <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-orange-500 rounded-full" style={{ width: '45%' }}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Insights */}
+              <div className="bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-2xl p-6 border border-purple-500/30">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+                    <SparklesIcon className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-white font-semibold">AI Insight</h3>
+                </div>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  You spent <span className="text-white font-semibold">15% more</span> on food this month compared to last month.
+                  Consider setting a budget to optimize your spending.
                 </p>
+                <button className="mt-4 w-full bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors border border-white/20">
+                  View More Insights
+                </button>
               </div>
-            </Card>
 
-            {/* Quick Actions */}
-            <Card>
-              <h3 className="text-h3 text-neutral-900 mb-4">Quick Actions</h3>
-              <div className="space-y-3">
-                <Button variant="secondary" size="sm" className="w-full justify-start">
-                  📊 View Analytics
-                </Button>
-                <Button variant="secondary" size="sm" className="w-full justify-start">
-                  🔐 Security Settings
-                </Button>
-                <Button variant="secondary" size="sm" className="w-full justify-start">
-                  💳 Manage Cards
-                </Button>
-                <Button variant="secondary" size="sm" className="w-full justify-start">
-                  📄 Statements
-                </Button>
+              {/* Goals */}
+              <div className="bg-[#0d1b2e] rounded-2xl p-6 border border-gray-800">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-white font-semibold">Savings Goal</h3>
+                  <span className="text-blue-400 text-sm">75%</span>
+                </div>
+                <div className="mb-3">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-gray-400">Vacation Fund</span>
+                    <span className="text-white">₹75,000 / ₹1,00,000</span>
+                  </div>
+                  <div className="h-3 bg-gray-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" style={{ width: '75%' }}></div>
+                  </div>
+                </div>
+                <button className="w-full bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors">
+                  Add Funds
+                </button>
               </div>
-            </Card>
-
-            {/* Info Alert */}
-            <Alert
-              severity="info"
-              message="Your behavioral fingerprint has been updated based on recent activity patterns."
-            />
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };

@@ -1,31 +1,61 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../components';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Login Page - Payment Brain Design System
  * Implements split-screen login with hero section
  * Based on TrustBank design with Payment Brain branding
  */
-const Login = ({ onLogin }) => {
+const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log('Login attempt:', { username, rememberMe });
-    // Simulate login - in production, call API here
-    if (username && password) {
-      onLogin?.();
+    setError('');
+    setLoading(true);
+
+    try {
+      const deviceInfo = {
+        device_type: 'desktop',
+        browser: navigator.userAgent.split('/').pop().split(' ')[0] || 'Chrome',
+        browser_version: navigator.userAgent.match(/Chrome\/(\d+)/)?.[1] || '120',
+        os_name: navigator.platform.includes('Mac') ? 'macOS' : navigator.platform.includes('Win') ? 'Windows' : 'Linux',
+        os_version: navigator.userAgent.match(/\(([^)]+)\)/)?.[1] || 'Unknown',
+        screen_width: window.screen.width,
+        screen_height: window.screen.height,
+        user_agent: navigator.userAgent,
+      };
+
+      const result = await login({
+        username,
+        password,
+        device_info: deviceInfo,
+      });
+
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.error || 'Login failed. Please try again.');
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSocialLogin = (provider) => {
     console.log('Social login with:', provider);
-    // Simulate social login - in production, call OAuth API
-    onLogin?.();
+    // TODO: Implement OAuth provider login
   };
 
   return (
@@ -228,6 +258,13 @@ const Login = ({ onLogin }) => {
               </div>
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <div className="p-4 bg-error-bg border border-error/20 rounded-lg">
+                <p className="text-body text-error">{error}</p>
+              </div>
+            )}
+
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -252,11 +289,24 @@ const Login = ({ onLogin }) => {
               type="submit"
               variant="primary"
               className="w-full flex items-center justify-center gap-2"
+              disabled={loading}
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
-              </svg>
-              Log in
+              {loading ? (
+                <>
+                  <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Logging in...
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
+                  </svg>
+                  Log in
+                </>
+              )}
             </Button>
           </form>
 
@@ -329,10 +379,6 @@ const Login = ({ onLogin }) => {
       </div>
     </div>
   );
-};
-
-Login.propTypes = {
-  onLogin: PropTypes.func,
 };
 
 export default Login;
