@@ -24,12 +24,26 @@ export class Session extends BaseModel {
   logout_at?: Date;
   correlation_id!: string;
 
+  // Additional fields for session management
+  refresh_token?: string;
+  browser?: string;
+  browser_version?: string;
+  os_version?: string;
+  city?: string;
+  is_active?: boolean;
+  last_active_at?: Date;
+  ended_at?: Date;
+  metadata?: Record<string, any>;
+  os_type?: string;
+  user_agent?: string;
+
   // Timestamps (inherited from BaseModel)
   created_at!: Date;
   updated_at!: Date;
 
   // Relations
   user?: User;
+  device?: any;
 
   static get jsonSchema() {
     return {
@@ -82,6 +96,14 @@ export class Session extends BaseModel {
         join: {
           from: 'sessions.user_id',
           to: 'users.id',
+        },
+      },
+      device: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: __dirname + '/user-device.model',
+        join: {
+          from: 'sessions.device_id',
+          to: 'user_devices.id',
         },
       },
     };

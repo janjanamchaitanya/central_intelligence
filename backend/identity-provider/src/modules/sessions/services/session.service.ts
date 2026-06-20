@@ -4,7 +4,7 @@ import { Session } from '../../../database/models/session.model';
 import { User } from '../../../database/models/user.model';
 import { UserDevice } from '../../../database/models/user-device.model';
 import { DeviceInfoDto } from '../../auth/dto/login.dto';
-import * as jwt from 'jsonwebtoken';
+import { sign, SignOptions } from 'jsonwebtoken';
 import * as crypto from 'crypto';
 
 export interface SessionCreateData {
@@ -58,13 +58,21 @@ export class SessionService {
       browser_version: deviceInfo.browser_version,
       os_type: device.os_type,
       os_version: deviceInfo.os_version,
-      latitude: deviceInfo.location?.latitude,
-      longitude: deviceInfo.location?.longitude,
       city: deviceInfo.location?.city,
       country: deviceInfo.location?.country || user.country,
       is_active: true,
       expires_at: expiresAt,
       metadata,
+      // Required fields from original schema
+      session_hash: tokenHash,
+      auth_method: 'password',
+      login_flow: deviceInfo.device_type === 'web' ? 'web' : 'mobile',
+      is_authenticated: true,
+      timezone: 'UTC',
+      suspicious: false,
+      login_at: new Date(),
+      correlation_id: crypto.randomBytes(16).toString('hex'),
+      status: 'active',
     });
 
     this.logger.log(`Session created for user ${user.id}: ${session.id}`);
@@ -222,7 +230,11 @@ export class SessionService {
       type: 'access',
     };
 
-    return jwt.sign(payload, this.jwtSecret, { expiresIn: this.jwtExpiresIn });
+    const options = {
+      expiresIn: this.jwtExpiresIn,
+    } as SignOptions;
+
+    return sign(payload, this.jwtSecret, options);
   }
 
   private generateRefreshToken(user: User): string {
@@ -232,7 +244,11 @@ export class SessionService {
       jti: crypto.randomBytes(16).toString('hex'),
     };
 
-    return jwt.sign(payload, this.jwtSecret, { expiresIn: this.refreshTokenExpiresIn });
+    const options = {
+      expiresIn: this.refreshTokenExpiresIn,
+    } as SignOptions;
+
+    return sign(payload, this.jwtSecret, options);
   }
 
   private hashToken(token: string): string {

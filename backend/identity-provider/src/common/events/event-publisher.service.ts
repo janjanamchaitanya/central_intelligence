@@ -83,12 +83,14 @@ export class EventPublisherService {
       correlation_id: data.correlationId,
       user_id: data.userId,
       session_id: data.sessionId,
-      device_id: data.deviceId,
-      device_type: data.deviceType,
-      auth_strategy: data.authStrategy,
       ip_address: data.ipAddress,
       user_agent: data.userAgent,
-      location: data.location,
+      metadata: {
+        device_id: data.deviceId,
+        device_type: data.deviceType,
+        auth_strategy: data.authStrategy,
+        location: data.location,
+      },
     });
   }
 
@@ -104,11 +106,13 @@ export class EventPublisherService {
       event_type: AuthEventType.LOGIN_FAILED,
       timestamp: new Date(),
       correlation_id: data.correlationId,
-      email: data.email,
-      username: data.username,
-      reason: data.reason,
-      auth_strategy: data.authStrategy,
       ip_address: data.ipAddress,
+      metadata: {
+        email: data.email,
+        username: data.username,
+        reason: data.reason,
+        auth_strategy: data.authStrategy,
+      },
     });
   }
 
@@ -125,8 +129,10 @@ export class EventPublisherService {
       correlation_id: data.correlationId,
       user_id: data.userId,
       session_id: data.sessionId,
-      reason: data.reason,
       ip_address: data.ipAddress,
+      metadata: {
+        reason: data.reason,
+      },
     });
   }
 
@@ -145,12 +151,14 @@ export class EventPublisherService {
       timestamp: new Date(),
       correlation_id: data.correlationId,
       user_id: data.userId,
-      device_id: data.deviceId,
-      device_type: data.deviceType,
-      is_new_device: data.isNewDevice,
-      is_trusted: data.isTrusted,
-      risk_score: data.riskScore,
       ip_address: data.ipAddress,
+      metadata: {
+        device_id: data.deviceId,
+        device_type: data.deviceType,
+        is_new_device: data.isNewDevice,
+        is_trusted: data.isTrusted,
+        risk_score: data.riskScore,
+      },
     });
   }
 
@@ -169,10 +177,12 @@ export class EventPublisherService {
       correlation_id: data.correlationId,
       user_id: data.userId,
       session_id: data.sessionId,
-      activity_type: data.activityType,
-      risk_score: data.riskScore,
-      details: data.details,
       ip_address: data.ipAddress,
+      metadata: {
+        activity_type: data.activityType,
+        risk_score: data.riskScore,
+        details: data.details,
+      },
     });
   }
 }

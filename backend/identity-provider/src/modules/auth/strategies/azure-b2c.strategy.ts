@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { IAuthStrategy, AuthResult } from '../interfaces/auth-strategy.interface';
 import { LoginDto } from '../dto/login.dto';
-import { User } from '../../../database/models/user.model';
+import { User, UserStatus } from '../../../database/models/user.model';
 
 @Injectable()
 export class AzureB2CStrategy implements IAuthStrategy {
@@ -103,7 +103,7 @@ export class AzureB2CStrategy implements IAuthStrategy {
       external_idp_id: azureUser.id,
       country: 'US', // Default, should be determined from Azure
       currency: 'USD', // Default, should be determined
-      status: 'active',
+      status: UserStatus.ACTIVE,
       is_active: true,
       tfa: false,
       password_digest: '', // No password for OAuth users

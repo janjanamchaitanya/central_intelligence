@@ -39,6 +39,20 @@ export class UserDevice extends BaseModel {
   push_provider?: string;
   deleted_at?: Date;
 
+  // Additional fields for device binding
+  fingerprint?: string;
+  is_trusted?: boolean;
+  is_active?: boolean;
+  is_blocked?: boolean;
+  login_count?: number;
+  last_login_at?: Date;
+  latitude?: number;
+  longitude?: number;
+  browser?: string; // Alias for browser_name
+  screen_width?: number;
+  screen_height?: number;
+  os_type?: string;
+
   // Timestamps (inherited from BaseModel)
   created_at!: Date;
   updated_at!: Date;
